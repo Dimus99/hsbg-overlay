@@ -102,6 +102,9 @@ STRINGS: dict[str, dict[str, str]] = {
                              EN: "seen on boards: {seen}"},
     "popup.minion":         {RU: "таверна {tier} · {attack}/{health}",
                              EN: "tavern {tier} · {attack}/{health}"},
+    # Bob also sells spells; they have no stats and no minion pool behind them.
+    "popup.spell":          {RU: "таверна {tier} · заклинание",
+                             EN: "tavern {tier} · spell"},
 
     # --- history ----------------------------------------------------------
     "history.line":         {RU: "{mark} ход {turn} · {name}{damage}",
