@@ -1,0 +1,53 @@
+name: release
+
+# Tag a commit (git tag v1.0.0 && git push --tags) and this builds the bundle
+# and attaches it to a GitHub release.
+#
+# The bundle is ad-hoc signed, not notarised: whoever downloads it has to clear
+# the quarantine flag once with
+#     xattr -cr "/Applications/HSBG Overlay.app"
+# Notarising properly needs a paid Developer ID; building from source does not.
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: macos-14
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      # make_app.sh builds out of the project venv and installs PyInstaller
+      # into it itself.
+      - name: Create the virtualenv
+        run: ./setup.sh
+
+      - name: Build the app
+        run: ./make_app.sh
+
+      - name: Zip the bundle
+        run: |
+          cd dist
+          ditto -c -k --keepParent "HSBG Overlay.app" "HSBG-Overlay-${GITHUB_REF_NAME}.zip"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: HSBG-Overlay-${{ github.ref_name }}
+          path: dist/*.zip
+
+      - name: Attach it to the release
+        if: startsWith(github.ref, 'refs/tags/')
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "$GITHUB_REF_NAME" --generate-notes --title "$GITHUB_REF_NAME" \
+            || echo "release already exists"
+          gh release upload "$GITHUB_REF_NAME" dist/*.zip --clobber

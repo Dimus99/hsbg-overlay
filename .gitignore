@@ -1,0 +1,14 @@
+# python
+__pycache__/
+*.py[cod]
+.venv/
+.pytest_cache/
+*.egg-info/
+
+# build artefacts
+build/
+dist/
+HSBG Overlay.app/
+
+# macOS
+.DS_Store

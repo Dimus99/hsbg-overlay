@@ -1,0 +1,4 @@
+# Development extras. The overlay itself needs only requirements.txt.
+-r requirements.txt
+pytest>=8.0        # tests/test_sim.py also runs standalone, without pytest
+pyinstaller>=6.11  # only for ./make_app.sh

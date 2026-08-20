@@ -1,0 +1,31 @@
+name: tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  test:
+    # macOS only: the overlay is built on AppKit and PyObjC.
+    runs-on: macos-14
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -r requirements-dev.txt
+
+      - name: Compile everything
+        run: python -m compileall -q hsbg tools packaging tests
+
+      # The suite skips the checks that need HearthstoneJSON when the card
+      # cache is cold, so it passes on a runner with no cache and no network.
+      - name: Run the checks
+        run: python -m pytest tests -q
