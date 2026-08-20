@@ -8,6 +8,13 @@ your own matches — pinned on top of the Hearthstone window.
 process memory reads, no injection, no network traffic with the game — the same
 mechanism HSTracker and Hearthstone Deck Tracker are built on.
 
+<sub>**The prediction is a simulation, not an oracle.** A handful of combat
+triggers are still not modelled — the list is in
+[What is not modelled](#what-is-not-modelled). When one of them is on either
+board the overlay says so on the odds card itself (`accuracy ~85% · not
+modelled: <cards>`) instead of handing you a confident number it cannot back
+up.</sub>
+
 [Русская версия README](README.ru.md) · [Install guide](docs/INSTALL.md) · macOS 12+ · Python 3.11+ · MIT
 
 ![The overlay during a fight](docs/screenshots/en/combat.jpg)
@@ -41,7 +48,7 @@ to configure — English here, and Russian in the
 
 | | |
 |---|---|
-| **Fight odds** | win / tie / loss from a Monte-Carlo simulation of the actual boards, with expected and maximum damage, a confidence interval and lethal risk |
+| **Fight odds** | win / tie / loss from a Monte-Carlo simulation of the actual boards, with expected and maximum damage, a confidence interval and lethal risk — plus a coverage warning when a board holds a trigger the engine cannot parse |
 | **Opponent boards** | every board you have been shown this match, replayed as real cards with the stats they had going into the fight |
 | **Lobby table** | all 8 players: placement, health, tavern tier |
 | **Minion pool** | how many copies of a minion are left in the shared pool and how many are already sitting on other boards |
@@ -191,7 +198,8 @@ state is remembered between runs.
 Appears **top centre of the game window** — where you are already looking during
 a fight — and disappears once the fight has played out. Inside: the
 win/tie/loss bar, expected and maximum damage, the confidence interval, lethal
-risk, and an accuracy note when the boards hold cards the engine cannot parse.
+risk, and an accuracy note when the boards hold cards the engine cannot parse
+(see [What is not modelled](#what-is-not-modelled) for what those are).
 Nothing is computed outside of combat, so the CPU is free while you shop.
 
 **Why the timing was not obvious.** Hearthstone dumps the whole fight into the
