@@ -158,6 +158,11 @@ Four independent windows instead of one long panel, each with its own job.
 
 ![The panels](docs/screenshots/en/panels.png)
 
+*Mid-match with everything expanded: the lobby table, every opponent board
+seen so far, your own stats and the fights of this match. Any block folds
+away on a click, and the warning at the bottom is the overlay saying the game
+is still in exclusive fullscreen.*
+
 ### 1. The status pill (always on screen)
 
 Small, in the corner of the game window. During a fight it reads
