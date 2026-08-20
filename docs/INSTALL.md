@@ -9,7 +9,7 @@ Step by step, from a clean Mac to an overlay on top of the game.
 |---|---|
 | macOS | 12 (Monterey) or newer, Apple Silicon or Intel |
 | Hearthstone | installed through Battle.net and launched at least once |
-| Python | 3.13 — only if you run from source; the built `.app` carries its own |
+| Python | 3.11 or newer, only if you run from source — `setup.sh` prefers 3.13; the built `.app` carries its own |
 
 The overlay only ever **reads** the log files Hearthstone writes itself. It does
 not read the game's memory, does not inject anything and does not talk to

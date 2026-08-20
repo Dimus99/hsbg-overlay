@@ -8,7 +8,7 @@ your own matches — pinned on top of the Hearthstone window.
 process memory reads, no injection, no network traffic with the game — the same
 mechanism HSTracker and Hearthstone Deck Tracker are built on.
 
-[Русская версия README](README.ru.md) · [Install guide](docs/INSTALL.md) · macOS 12+ · Python 3.13 · MIT
+[Русская версия README](README.ru.md) · [Install guide](docs/INSTALL.md) · macOS 12+ · Python 3.11+ · MIT
 
 ![The overlay during a fight](docs/screenshots/en/combat.jpg)
 
@@ -21,6 +21,7 @@ to configure — English here, and Russian in the
 ## Contents
 
 - [What it shows](#what-it-shows)
+- [Is this allowed?](#is-this-allowed)
 - [Requirements](#requirements)
 - [Install](#install) · [full guide](docs/INSTALL.md)
 - [Build a real .app](#build-a-real-app)
@@ -47,10 +48,23 @@ to configure — English here, and Russian in the
 | **Your stats** | average placement, combat win rate, results with the hero you are playing right now |
 | **This match's fights** | every fight so far with the damage actually taken |
 
+## Is this allowed?
+
+It reads `Power.log` — the file Hearthstone writes on its own, the same one
+HSTracker and Hearthstone Deck Tracker have been reading for a decade. Nothing
+is written back to the game, no process memory is touched, no packets are sent
+and no input is automated: the overlay is a window drawn next to the game, and
+it cannot click anything for you.
+
+That puts it in the same category as the established trackers rather than
+anywhere near a bot. It is not a promise about anyone's account — Blizzard's
+rules are Blizzard's to interpret, and you run it at your own discretion.
+
 ## Requirements
 
 - macOS 12 or newer, Apple Silicon or Intel
-- Python 3.13 (`brew install python@3.13`) — only for running from source
+- Python 3.11 or newer, only for running from source — `setup.sh` looks for
+  3.13 first (`brew install python@3.13`), and the built `.app` needs none at all
 - Hearthstone in **windowed** or **borderless windowed** mode (see below)
 
 The only runtime dependency is PyObjC. Card names and art come from
