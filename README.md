@@ -10,11 +10,11 @@ mechanism HSTracker and Hearthstone Deck Tracker are built on.
 
 [Русская версия README](README.ru.md) · [Install guide](docs/INSTALL.md) · macOS 12+ · Python 3.13 · MIT
 
-![The overlay during a fight](docs/screenshots/overlay-combat.jpg)
+![The overlay during a fight](docs/screenshots/en/combat.jpg)
 
-*The overlay speaks whatever language the game does. This client runs
-Hearthstone in Russian, so the overlay is in Russian; an English client gets
-English labels, and nothing has to be configured for that.*
+*The overlay labels itself in whatever language the game runs in, with nothing
+to configure — English here, and Russian in the
+[screenshots of the Russian README](README.ru.md).*
 
 ---
 
@@ -156,7 +156,7 @@ public window list.
 
 Four independent windows instead of one long panel, each with its own job.
 
-![The panels](docs/screenshots/panels.png)
+![The panels](docs/screenshots/en/panels.png)
 
 ### 1. The status pill (always on screen)
 
@@ -167,7 +167,7 @@ state is remembered between runs.
 
 ### 2. The odds card (during a fight only)
 
-![The odds card](docs/screenshots/odds.png)
+![The odds card](docs/screenshots/en/odds.png)
 
 Appears **top centre of the game window** — where you are already looking during
 a fight — and disappears once the fight has played out. Inside: the
@@ -216,7 +216,7 @@ Under the pill. Clicking a header collapses the block, and the state is saved.
 | **Stats** | your average placement, combat win rate, results with the current hero |
 | **This match's fights** | fight history with the damage actually taken |
 
-![The overlay in the tavern](docs/screenshots/overlay-tavern.jpg)
+![The overlay in the tavern](docs/screenshots/en/tavern.jpg)
 
 ### 4. Hover popups
 
@@ -239,6 +239,17 @@ They appear at the cursor and occupy nothing permanently.
 * **Hover a minion in the tavern** — a popup says how many copies of that card
   are left in the shared pool, how many are already on other boards, and what the
   card does.
+
+![An opponent's board on hover](docs/screenshots/en/hover-board.png)
+
+*Hovering the "?" pin on a portrait: whose board it is, how old it is, and the
+minions with the stats they actually fought with — `2/1` on a card that prints
+something else, and `TR` for Taunt + Reborn.*
+
+![The pool tooltip](docs/screenshots/en/pool.png)
+
+*Hovering a minion in Bob's tavern: how many copies of it are left in the shared
+pool, how many have been seen on other boards, and what the card does.*
 
 Hearthstone does not log mouse hovering, so hovering **inside the game** is
 derived from the cursor position relative to the window. The zones are defined as

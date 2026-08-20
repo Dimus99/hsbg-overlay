@@ -10,7 +10,7 @@
 
 [English README](README.md) · [Инструкция по установке](docs/INSTALL.ru.md) · macOS 12+ · Python 3.13 · MIT
 
-![Оверлей во время боя](docs/screenshots/overlay-combat.jpg)
+![Оверлей во время боя](docs/screenshots/ru/combat.jpg)
 
 ---
 
@@ -93,7 +93,7 @@ macOS не позволяет рисовать поверх приложения
 
 ## Интерфейс
 
-![Панели оверлея](docs/screenshots/panels.png)
+![Панели оверлея](docs/screenshots/ru/panels.png)
 
 Четыре независимых окна вместо одной длинной панели — у каждого своя роль.
 
