@@ -8,7 +8,7 @@ your own matches — pinned on top of the Hearthstone window.
 process memory reads, no injection, no network traffic with the game — the same
 mechanism HSTracker and Hearthstone Deck Tracker are built on.
 
-[Русская версия README](README.ru.md) · macOS 12+ · Python 3.13 · MIT
+[Русская версия README](README.ru.md) · [Install guide](docs/INSTALL.md) · macOS 12+ · Python 3.13 · MIT
 
 ![The overlay during a fight](docs/screenshots/overlay-combat.jpg)
 
@@ -22,7 +22,7 @@ English labels, and nothing has to be configured for that.*
 
 - [What it shows](#what-it-shows)
 - [Requirements](#requirements)
-- [Install](#install)
+- [Install](#install) · [full guide](docs/INSTALL.md)
 - [Build a real .app](#build-a-real-app)
 - [Important: windowed mode](#important-windowed-mode)
 - [The interface](#the-interface)
@@ -57,6 +57,9 @@ The only runtime dependency is PyObjC. Card names and art come from
 [HearthstoneJSON](https://hearthstonejson.com/) and are cached on disk.
 
 ## Install
+
+A step-by-step guide with a troubleshooting table lives in
+**[docs/INSTALL.md](docs/INSTALL.md)**. The short version:
 
 ```bash
 git clone https://github.com/Dimus99/hsbg-overlay.git

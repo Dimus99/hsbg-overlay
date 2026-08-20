@@ -8,13 +8,16 @@
 Никакого чтения памяти процесса, инъекций или сетевого взаимодействия с игрой —
 тот же механизм, на котором работают HSTracker и Hearthstone Deck Tracker.
 
-[English README](README.md) · macOS 12+ · Python 3.13 · MIT
+[English README](README.md) · [Инструкция по установке](docs/INSTALL.ru.md) · macOS 12+ · Python 3.13 · MIT
 
 ![Оверлей во время боя](docs/screenshots/overlay-combat.jpg)
 
 ---
 
 ## Установка
+
+Пошаговая инструкция с таблицей «если что-то не работает» —
+**[docs/INSTALL.ru.md](docs/INSTALL.ru.md)**. Коротко:
 
 ```bash
 git clone https://github.com/Dimus99/hsbg-overlay.git
