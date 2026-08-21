@@ -740,6 +740,86 @@ def test_parser() -> None:
               f"{m.attack}/{m.health} ds={m.divine_shield}")
 
 
+def test_tavern_row_counts_spells() -> None:
+    """Bob's row is matched to the cursor by counting slots from the left.
+
+    Battlegrounds sells spells next to the minions. Leaving them out shortened
+    the row, so every card to the right of a spell answered with its neighbour's
+    name — and the row is centred, so the count being wrong moved all of it.
+    """
+    print("tavern row:")
+    p = "D 00:00:00.0000000 GameState.DebugPrintPower() - "
+    lines = [
+        p + "CREATE_GAME",
+        p + "    GameEntity EntityID=1",
+        p + "    Player EntityID=2 PlayerID=5 GameAccountId=[hi=123 lo=456]",
+        p + "    Player EntityID=3 PlayerID=13 GameAccountId=[hi=0 lo=0]",
+    ]
+    row = [("MINION", "BG_LEFT"), ("BATTLEGROUND_SPELL", "BG33_101"),
+           ("MINION", "BG_RIGHT")]
+    for slot, (kind, card) in enumerate(row, start=1):
+        lines += [
+            p + f"FULL_ENTITY - Creating ID={100 + slot} CardID={card}",
+            p + f"    tag=CARDTYPE value={kind}",
+            p + "    tag=CONTROLLER value=13",
+            p + "    tag=ZONE value=PLAY",
+            p + f"    tag=ZONE_POSITION value={slot}",
+            p + "    tag=TECH_LEVEL value=1",
+        ]
+    state = BattlegroundsState()
+    state.feed_lines(lines)
+
+    tavern = state.current_tavern()
+    check("the row is as long as what Bob shows", len(tavern) == 3,
+          str([m.card_id for m in tavern]))
+    if len(tavern) == 3:
+        check("the spell keeps its slot", tavern[1].card_id == "BG33_101",
+              tavern[1].card_id)
+        check("and is marked as one", tavern[1].is_spell)
+        check("the card right of it is not shifted left",
+              tavern[2].card_id == "BG_RIGHT", tavern[2].card_id)
+        check("minions are still minions", not tavern[0].is_spell)
+
+    # A spell occupies a tavern slot but never a board: nothing that feeds the
+    # simulator may pick it up.
+    ghost_board = state._live_minions(13)
+    check("boards stay minions-only",
+          [m.card_id for m in ghost_board] == ["BG_LEFT", "BG_RIGHT"],
+          str([m.card_id for m in ghost_board]))
+
+
+def test_discover_hides_the_tavern_tooltip() -> None:
+    """A Discover covers Bob's row; the row underneath must stop answering."""
+    print("discover:")
+    state = BattlegroundsState()
+    check("nothing open to begin with", state.open_choice == "")
+
+    state.feed_line("D 03:45:12.0000000 GameState.DebugPrintEntityChoices() - id=2 "
+                    "Player=Player#1234 TaskList= ChoiceType=GENERAL CountMin=1 CountMax=1")
+    check("a discover is noticed", state.open_choice == "GENERAL", state.open_choice)
+
+    # The lines listing the three offered cards must not be mistaken for a
+    # second choice opening, nor close the one that is open.
+    state.feed_line("D 03:45:12.0000000 GameState.DebugPrintEntityChoices() -   "
+                    "Entities[0]=[entityName=A New Sprout id=99 zone=HAND zonePos=1 "
+                    "cardId=BG33_101 player=1]")
+    check("the offered cards are not a second choice", state.open_choice == "GENERAL",
+          state.open_choice)
+
+    state.feed_line("D 03:45:20.0000000 GameState.SendChoices() - id=2 ChoiceType=GENERAL")
+    check("picking one closes it", state.open_choice == "", state.open_choice)
+
+    # The mulligan (the hero offer in Battlegrounds) counts too.
+    state.feed_line("D 03:45:21.0000000 GameState.DebugPrintEntityChoices() - id=1 "
+                    "Player=Player#1234 TaskList=7 ChoiceType=MULLIGAN CountMin=1 CountMax=1")
+    check("the hero offer counts as well", state.open_choice == "MULLIGAN",
+          state.open_choice)
+
+    state.feed_line("D 03:45:22.0000000 GameState.DebugPrintPower() - CREATE_GAME")
+    check("a new match starts with nothing open", state.open_choice == "",
+          state.open_choice)
+
+
 def test_match_end() -> None:
     """Nothing live may survive the match it belongs to."""
     print("end of match:")
@@ -944,8 +1024,12 @@ def main() -> int:
     test_new_wordings()
     test_module_attributes()
     test_parser()
+    test_tavern_row_counts_spells()
+    test_discover_hides_the_tavern_tooltip()
     test_match_end()
     test_marks_toggle()
+    test_marks_survive_collapse()
+    test_pin_hit_test()
     test_language_detection()
     test_labels_follow_the_language()
     print()
