@@ -574,12 +574,23 @@ class App:
                                 else "normal")
 
     def _tavern_popup(self, index: int, model) -> Optional[PopupView]:
+        # A Discover lays three cards of its own over Bob's row. Bob's actual
+        # minions are still what the log describes, so answering here would name
+        # a card sitting behind the choice rather than the one under the cursor.
+        if self.state.open_choice:
+            return None
         tavern = self.state.current_tavern()
         if index >= len(tavern):
             return None
         minion = tavern[index]
         name = (self.db.name(minion.card_id, minion.name) if self.db.loaded
                 else (minion.name or minion.card_id))
+        if minion.is_spell:
+            # No stats and no pool to count: what is worth reading is the text.
+            text = self.db.text(minion.card_id) if self.db.loaded else ""
+            return PopupView(kind="minion", title=name,
+                             subtitle=self.t("popup.spell", tier=minion.tier),
+                             lines=[_wrap(text, 40)] if text else [])
         entry = next((p for p in model.pool if p.card_id == minion.base_card_id), None)
         total = pool_module.POOL_SIZE_BY_TIER.get(minion.tier, 0)
         seen = entry.seen if entry is not None else 0

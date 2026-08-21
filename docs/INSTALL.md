@@ -81,7 +81,7 @@ What each line has to say:
 | `log folder` | a path. "not found" means Hearthstone has never been launched, or it is installed somewhere other than `/Applications/Hearthstone` |
 | `log.config` | either "already has everything" or "written" — in the second case **restart Hearthstone**, see step 5 |
 | `game language` | the locale the game itself runs in; the overlay labels itself in it |
-| `fullscreen` | `no`. A `YES` here means the overlay will stay behind the game — see step 6 |
+| `fullscreen` | informational. The overlay draws over the game in fullscreen too; if it ever ends up behind the game, Borderless Window is the fix |
 | `card database` | thousands of cards. An error means no network on the first run; the database is downloaded once and then cached |
 | `game window` | the size of the game's window. Empty is fine while Hearthstone is not running |
 
@@ -94,22 +94,14 @@ the game. Without them the log stays silent and the overlay has nothing to read.
 
 Quit Hearthstone completely (⌘Q) and start it again.
 
-## 6. Switch the game to windowed mode
-
-macOS refuses to draw over an application in **exclusive fullscreen** — the game
-moves to a Space of its own. In Hearthstone: **Settings → Graphics → Display
-mode → Windowed** or **Borderless Window**.
-
-Borderless Window looks exactly like fullscreen and is the usual choice.
-
-Screen recording permission is **not** needed: window geometry comes from the
-public window list.
-
-## 7. Run it
+## 6. Run it
 
 ```bash
 ./run.sh
 ```
+
+Screen recording permission is **not** needed: window geometry comes from the
+public window list.
 
 A **BG** item appears in the menu bar. From there you can hide the overlay,
 switch the "?" pins on the opponents' portraits on and off, turn on the debug
@@ -169,7 +161,7 @@ stay — they cost nothing and other trackers use the same ones.
 
 | Symptom | What it is |
 |---|---|
-| Overlay is nowhere on screen | the game is in exclusive fullscreen. `./run.sh --check` says so on the `fullscreen` line — switch to Windowed or Borderless Window |
+| Overlay is nowhere on screen | check that Hearthstone is running and focused (`show_when_hs_inactive` keeps it visible otherwise). On some setups exclusive fullscreen pushes the game onto a Space of its own — switching it to Borderless Window in Settings → Graphics puts the overlay back on top |
 | The pill says "waiting for a Battlegrounds match" during a match | the log sections are not active yet: restart Hearthstone once (step 5) |
 | `log folder: not found` | Hearthstone has not been launched since installation, or it lives outside `/Applications/Hearthstone`. The overlay also looks in `~/Library/Logs/Hearthstone` |
 | Card names are missing or the database errors out | no network on the first run. Connect once — the database is cached afterwards and `offline: true` in the settings keeps it from ever asking again |
