@@ -54,10 +54,6 @@ class MinionSnapshot:
     cant_attack: bool = False
     # raw script data, used by a few card effects (e.g. accumulated buffs)
     script_data: tuple[int, int, int] = (0, 0, 0)
-    # Bob sells spells alongside minions, and they occupy a slot in his row like
-    # anything else. They never reach a board, so everything downstream of the
-    # tavern treats them as minions with no stats unless it checks this.
-    is_spell: bool = False
 
     @property
     def base_card_id(self) -> str:
@@ -194,10 +190,6 @@ class BattlegroundsState:
         self.current_combat: Optional[CombatRecord] = None
         self.combat_history: list[CombatRecord] = []
         self.seen_cards: dict[str, int] = {}      # base card id -> max copies seen at once
-        # A Discover (or the hero offer) is on screen, covering Bob's row with
-        # cards of its own. The row underneath is still in the log, so anything
-        # answering by geometry has to keep quiet until the choice is made.
-        self.open_choice = ""
         self.my_hand: list[MinionSnapshot] = []
         self._combat_setup = False
         self._combat_block_depth = 0
@@ -261,13 +253,6 @@ class BattlegroundsState:
             self.reset()
             self.archive = archive
             self.game_active = True
-            return
-
-        if kind == "choice_open":
-            self.open_choice = ev.value or "GENERAL"
-            return
-        if kind == "choice_close":
-            self.open_choice = ""
             return
 
         if kind == "game_info" and ev.tag == "GameType":
@@ -541,7 +526,6 @@ class BattlegroundsState:
         self.combat_watched = True
         self.combat_resolved_at = 0.0
         self.next_opponent_id = 0
-        self.open_choice = ""
         self.on_change("game_end")
 
     def _note_hero_damage(self, ent: Entity, amount: int) -> None:
@@ -616,14 +600,13 @@ class BattlegroundsState:
 
     # ---------------------------------------------------------------- boards
 
-    def _live_minions(self, controller: int, only_ids: Optional[set[int]] = None,
-                      card_types: tuple[str, ...] = ("MINION",)
+    def _live_minions(self, controller: int, only_ids: Optional[set[int]] = None
                       ) -> list[MinionSnapshot]:
         out: list[MinionSnapshot] = []
         for ent in self.parser.entities.values():
             if only_ids is not None and ent.id not in only_ids:
                 continue
-            if ent.tag("CARDTYPE") not in card_types:
+            if ent.tag("CARDTYPE") != "MINION":
                 continue
             if ent.tag("ZONE") != "PLAY":
                 continue
@@ -782,26 +765,15 @@ class BattlegroundsState:
             out.append((ent.int_tag("ZONE_POSITION"), ent.card_id))
         return [card_id for _, card_id in sorted(out)]
 
-    # What Bob can have standing in his row. Minions are the obvious half;
-    # Battlegrounds also sells spells, and they take up a slot exactly like a
-    # minion does.
-    TAVERN_CARD_TYPES = ("MINION", "BATTLEGROUND_SPELL")
-
     def current_tavern(self) -> list[MinionSnapshot]:
-        """What Bob is offering right now, left to right — **as displayed**.
-
-        Spells are included deliberately. The cursor is matched to a card by
-        counting slots from the left, so a row that omits the spells reports the
-        wrong card for every slot to the right of one — and a wrong count of
-        cards moves the whole row, since Bob centres it.
+        """What Bob is offering right now, left to right.
 
         Outside combat the ghost player owns exactly the tavern row, so no
         filtering by creation block is needed here.
         """
         if self.display_phase() == "combat" or not self.ghost_player_id:
             return []
-        return self._live_minions(self.ghost_player_id,
-                                  card_types=self.TAVERN_CARD_TYPES)
+        return self._live_minions(self.ghost_player_id)
 
     # ------------------------------------------------------------------ pool
 
@@ -853,7 +825,6 @@ def minion_from_entity(ent: Entity) -> MinionSnapshot:
         attack=ent.int_tag("ATK", 0),
         health=max(0, health),
         tier=ent.int_tag("TECH_LEVEL", 1),
-        is_spell=ent.tag("CARDTYPE") == "BATTLEGROUND_SPELL",
         golden=ent.tag("PREMIUM") == "1" or ent.card_id.endswith("_G"),
         position=ent.int_tag("ZONE_POSITION", 0),
         races=races,
