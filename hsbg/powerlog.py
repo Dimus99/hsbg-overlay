@@ -38,10 +38,6 @@ RE_META_INFO = re.compile(r"^\s*Info\[\d+\] = (.+?)\s*$")
 
 RE_DEBUG_GAME = re.compile(r"^(\w+)=(.*)$")
 RE_DEBUG_PLAYER = re.compile(r"^PlayerID=(\d+), PlayerName=(.*)$")
-# "GameState.DebugPrintEntityChoices() - id=2 Player=X TaskList= ChoiceType=GENERAL …"
-# opens a choice, "GameState.SendChoices() - id=2 ChoiceType=GENERAL" closes it.
-# Only the header line carries the id; the Entities[n]= lines under it do not.
-RE_CHOICE = re.compile(r"^id=(\d+)\b.*\bChoiceType=(\S+)")
 
 
 @dataclass
@@ -141,9 +137,7 @@ class PowerLogParser:
         # Roughly half of Power.log is PowerTaskList output we never use, and the
         # file runs to tens of millions of lines. A substring test is an order of
         # magnitude cheaper than the regex, so it guards the hot path.
-        # "GameState.Send" covers both SendOption and SendChoices, so the guard
-        # stays at two substring tests.
-        if "GameState.Debug" not in line and "GameState.Send" not in line:
+        if "GameState.Debug" not in line and "GameState.SendOption" not in line:
             return []
         m = RE_LINE.match(line)
         if not m:
@@ -152,12 +146,6 @@ class PowerLogParser:
 
         if source == "GameState.DebugPrintGame":
             return self._feed_debug_game(body)
-        if source == "GameState.DebugPrintEntityChoices":
-            m2 = RE_CHOICE.match(body)
-            return [Event("choice_open", value=m2.group(2))] if m2 else []
-        if source == "GameState.SendChoices":
-            m2 = RE_CHOICE.match(body)
-            return [Event("choice_close", value=m2.group(2))] if m2 else []
         if source == "GameState.SendOption":
             # The player clicked something. Everything else in the log is sent
             # ahead of the screen, so this is our only real-time heartbeat.
